@@ -383,6 +383,11 @@ function render(){
           <div class="col gap2 mb2">
             ${s.why.map(w=>`<div class="row gap2 small" style="justify-content:flex-start">${svgCheck("#4ADE9E")}<span>${esc(w)}</span></div>`).join("")}
           </div>
+          ${(SPECS[s.key]&&SPECS[s.key].aiTracks)?`
+          <div class="stat-label mt2">AI-направления</div>
+          <div class="row wrap gap2 mb2" style="justify-content:flex-start">
+            ${SPECS[s.key].aiTracks.map(t=>`<span class="chip">${esc(t)}</span>`).join("")}
+          </div>`:""}
           ${S.openSpec===i
             ?`<p class="small sub mt2">${esc(s.desc)}</p>`
             :`<button class="btn-ghost mt2" onclick="openSpec(${i})">Подробнее</button>`}
