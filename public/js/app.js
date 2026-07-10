@@ -310,7 +310,10 @@ function render(){
           <div class="row mb3">
             <span class="row gap3" style="justify-content:flex-start">
               <span class="rank ${i===0?"rank-1":""}">0${i+1}</span>
-              <span style="font-weight:600">${SPECS[key].name}</span>
+              <span class="col" style="align-items:flex-start;gap:2px">
+                <span style="font-weight:600">${esc((SPECS[key].aiTracks||[])[0]||SPECS[key].name)}</span>
+                ${SPECS[key].aiTracks?`<span class="xs sub">${esc(SPECS[key].name)}</span>`:""}
+              </span>
             </span>
             <span class="h-num" style="color:var(--accent);font-size:17px">${pct}%</span>
           </div>
@@ -371,7 +374,8 @@ function render(){
           <div class="row mb3" style="align-items:flex-start;gap:12px">
             <div class="col gap2" style="align-items:flex-start">
               <span class="rank ${i===0?"rank-1":""}">0${i+1}</span>
-              <div style="font-family:Manrope;font-weight:800;font-size:17px;line-height:1.3">${esc(s.name)}</div>
+              <div style="font-family:Manrope;font-weight:800;font-size:17px;line-height:1.3">${esc((SPECS[s.key]&&SPECS[s.key].aiTracks)?SPECS[s.key].aiTracks[0]:s.name)}</div>
+              ${(SPECS[s.key]&&SPECS[s.key].aiTracks)?`<div class="xs sub">${esc(s.name)}</div>`:""}
             </div>
             <div style="text-align:right;flex-shrink:0">
               <div class="h-num" style="font-size:24px;color:var(--accent)">${s.match}%</div>
