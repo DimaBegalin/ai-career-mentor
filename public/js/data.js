@@ -122,24 +122,182 @@ const QUESTIONS = [
     ]},
 ];
 
-/* фолбэк-база вузов, если веб-поиск недоступен */
+/* Фолбэк-база вузов (если веб-поиск недоступен): география × специальность,
+   собрана веб-исследованием, программы — реальные официальные названия.
+   sel (5–25) — селективность вуза, участвует в расчёте вероятности. */
 const FALLBACK_UNIS = {
-  "США":[
-    {country:"США",name:"Berea College",grant:"100% tuition для всех студентов",req:"IELTS 6.5, эссе",prob:0},
-    {country:"США",name:"Minerva University",grant:"need-based до 100%",req:"IELTS 7.0, портфолио",prob:0},
-    {country:"США",name:"NYU Abu Dhabi",grant:"full-ride для поступивших",req:"SAT 1400+, IELTS 7.5",prob:0}],
-  "Европа":[
-    {country:"Венгрия",name:"BME Budapest",grant:"Stipendium Hungaricum — полный",req:"IELTS 5.5–6.0",prob:0},
-    {country:"Германия",name:"TU München",grant:"обучение ~бесплатно",req:"IELTS 6.5, Studienkolleg",prob:0},
-    {country:"Нидерланды",name:"TU Delft",grant:"Holland Scholarship (частично)",req:"IELTS 6.5",prob:0}],
-  "Азия":[
-    {country:"Южная Корея",name:"KAIST",grant:"GKS (Global Korea Scholarship) — полный + стипендия + перелёт",req:"IELTS 6.0, сильная математика, дедлайн ~1 ноября",prob:0},
-    {country:"Гонконг",name:"HKUST",grant:"HKUST Full Scholarship — 100% обучения + стипендия",req:"IELTS 6.5+, сильный GPA",prob:0},
-    {country:"Япония",name:"University of Tokyo",grant:"MEXT — полный + стипендия + перелёт",req:"IELTS 6.0+, экзамены MEXT",prob:0},
-    {country:"Сингапур",name:"NUS",grant:"merit scholarships + Tuition Grant",req:"IELTS 6.5+, топ-оценки",prob:0}],
-  "Казахстан":[
-    {country:"Казахстан",name:"Nazarbayev University",grant:"полный гос. грант",req:"NUFYP/IELTS 6.0+",prob:0},
-    {country:"Казахстан",name:"KBTU",grant:"гос. грант / скидки",req:"ЕНТ",prob:0},
-    {country:"Казахстан",name:"AITU",grant:"гос. грант / скидки",req:"ЕНТ",prob:0}],
+  "США": {
+    business:[
+      {country:"США",name:"University of Pennsylvania (Wharton)",program:"BS in Economics, concentration Artificial Intelligence for Business",grant:"Покрывает 100% need иностранцев (need-aware): гранты до полной стоимости",req:"TOEFL 100+/IELTS 7.5, SAT ~1500+, дедлайн 5 янв (ED 1 ноя)",sel:24},
+      {country:"США",name:"Minerva University",program:"BS Business",grant:"Need-based aid всем иностранцам, ~80% получают гранты; tuition всего ~$24.5k",req:"SAT не нужен, англ. по заданиям, раунды ~ноя/янв/апр",sel:16},
+      {country:"США",name:"Berea College",program:"BA Business Administration",grant:"Tuition Promise: 100% tuition всем студентам + need-гранты на жильё",req:"TOEFL 80/IELTS 6.5, дедлайн для иностранцев 30 ноя",sel:17},
+    ],
+    marketing:[
+      {country:"США",name:"University of Southern California (Marshall)",program:"BS Business Administration (Marketing emphasis)",grant:"Trustee Scholarship (полный tuition) и Presidential (50%) открыты иностранцам",req:"TOEFL 100/IELTS 7, дедлайн 1 дек (для merit), SAT опц.",sel:21},
+      {country:"США",name:"University of Alabama",program:"BS in Marketing",grant:"Автоматич. merit $6k–28k/год иностранцам; Presidential — полный tuition",req:"TOEFL 71/IELTS 6.0, rolling, приоритет ~5 дек, SAT для merit",sel:6},
+      {country:"США",name:"Arizona State University (W. P. Carey)",program:"BS Marketing (Digital)",grant:"New American University merit-стипендии иностранцам (до ~$15.5k/год)",req:"TOEFL 61/IELTS 6.0, rolling-приём, SAT опц.",sel:5},
+    ],
+    cs:[
+      {country:"США",name:"Massachusetts Institute of Technology",program:"BS Artificial Intelligence and Decision Making (Course 6-4)",grant:"Need-blind для иностранцев, покрывает 100% need — часто полная стоимость",req:"SAT ~1520+, TOEFL 90+/IELTS 7+, дедлайн ~6 янв (EA 1 ноя)",sel:25},
+      {country:"США",name:"Minerva University",program:"BS Computational Sciences",grant:"Need-based aid всем иностранцам, ~80% получают гранты; tuition ~$24.5k",req:"SAT не нужен, англ. по заданиям, раунды ~ноя/янв/апр",sel:16},
+      {country:"США",name:"Berea College",program:"BA Computer and Information Science",grant:"Tuition Promise: 100% tuition всем студентам + need-гранты на жильё",req:"TOEFL 80/IELTS 6.5, дедлайн для иностранцев 30 ноя",sel:17},
+    ],
+    medicine:[
+      {country:"США",name:"Harvard University",program:"AB Human Developmental and Regenerative Biology (pre-med)",grant:"Need-blind для иностранцев, 100% need; семьи с доходом до $100k платят $0",req:"SAT обязателен (~1520+), дедлайн 1 янв (REA 1 ноя)",sel:25},
+      {country:"США",name:"NYU Abu Dhabi",program:"BS Biology (pre-health track)",grant:"Need-blind приём, need-гранты вплоть до полной стоимости (~$90k/год)",req:"Тест-опционально, IELTS 7.0+, дедлайн 5 янв (ED 1 ноя)",sel:21},
+      {country:"США",name:"Berea College",program:"BA Biology (pre-med track)",grant:"Tuition Promise: 100% tuition всем студентам + need-гранты на жильё",req:"TOEFL 80/IELTS 6.5, дедлайн для иностранцев 30 ноя",sel:17},
+    ],
+    engineering:[
+      {country:"США",name:"Princeton University",program:"BSE Mechanical and Aerospace Engineering (robotics)",grant:"Need-blind для иностранцев, 100% need без кредитов (грантами)",req:"TOEFL 100+/IELTS 7.5, дедлайн 1 янв (REA 1 ноя)",sel:25},
+      {country:"США",name:"Worcester Polytechnic Institute",program:"BS Robotics Engineering",grant:"Merit-стипендии иностранцам $5–25k/год + Robotics Scholars до $25k",req:"Test-blind (без SAT), TOEFL 90/IELTS 7.0, дедлайн ~1 фев",sel:13},
+      {country:"США",name:"Michigan Technological University",program:"BS Mechatronics",grant:"International Ambassador Scholarship $11k–14.3k/год автоматически",req:"TOEFL 79/IELTS 6.5, rolling-приём, SAT опц.",sel:6},
+    ],
+    design:[
+      {country:"США",name:"University of Southern California (Cinematic Arts)",program:"BFA Game Development and Interactive Design",grant:"Trustee Scholarship — полный tuition, доступна иностранцам",req:"TOEFL 100/IELTS 7, дедлайн 1 дек, нужно портфолио",sel:22},
+      {country:"США",name:"Rochester Institute of Technology",program:"BS Game Design and Development",grant:"Автоматические merit-стипендии $14k–27k/год, включая иностранцев",req:"TOEFL 79/IELTS 6.5, дедлайн RD 15 янв, SAT опц.",sel:11},
+      {country:"США",name:"Savannah College of Art and Design (SCAD)",program:"BFA Interactive Design and Game Development",grant:"Академические и портфолио merit-стипендии SCAD для иностранцев",req:"TOEFL 85/IELTS 6.5, rolling, SAT не обязателен",sel:6},
+    ],
+    education:[
+      {country:"США",name:"Vanderbilt University (Peabody College)",program:"BS Human and Organizational Development",grant:"Need-aid иностранцам (100% need) + Cornelius Vanderbilt — полный tuition",req:"TOEFL 100/IELTS 7.5, SAT опц., дедлайн 1 янв (ED 1 ноя)",sel:23},
+      {country:"США",name:"Berea College",program:"BA Education Studies",grant:"Tuition Promise: 100% tuition всем студентам + need-гранты на жильё",req:"TOEFL 80/IELTS 6.5, дедлайн для иностранцев 30 ноя",sel:17},
+      {country:"США",name:"Minerva University",program:"BA Social Sciences",grant:"Need-based aid всем иностранцам, ~80% получают гранты; tuition ~$24.5k",req:"SAT не нужен, англ. по заданиям, раунды ~ноя/янв/апр",sel:16},
+    ],
+    science:[
+      {country:"США",name:"Yale University",program:"BS Statistics and Data Science",grant:"Need-blind для иностранцев, 100% need; семьи до $75k платят $0",req:"SAT/ACT обязателен, TOEFL 100/IELTS 7.5, дедлайн 2 янв",sel:25},
+      {country:"США",name:"NYU Abu Dhabi",program:"BS Physics",grant:"Need-blind приём, need-гранты вплоть до полной стоимости (~$90k/год)",req:"Тест-опционально, IELTS 7.0+, дедлайн 5 янв (ED 1 ноя)",sel:21},
+      {country:"США",name:"Minerva University",program:"BS Natural Sciences",grant:"Need-based aid всем иностранцам, ~80% получают гранты; tuition ~$24.5k",req:"SAT не нужен, англ. по заданиям, раунды ~ноя/янв/апр",sel:16},
+    ],
+  },
+  "Европа": {
+    business:[
+      {country:"Венгрия",name:"Corvinus University of Budapest",program:"Business Administration and Management BSc",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, англ. B2, тест по математике; SH до 15 янв",sel:14},
+      {country:"Италия",name:"Bocconi University",program:"Bachelor in Economics, Management and Computer Science",grant:"Bocconi Scholarship (need-based) — полное покрытие платы за обучение",req:"SAT или тест Bocconi, IELTS 6.0+, ранняя подача с осени",sel:21},
+      {country:"Нидерланды",name:"Erasmus University Rotterdam (RSM)",program:"BSc International Business Administration",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.5, сильная математика; селекция — до 15 янв",sel:17},
+    ],
+    marketing:[
+      {country:"Венгрия",name:"Budapest Metropolitan University (METU)",program:"Commerce and Marketing BSc",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, англ. B2, собеседование; SH до 15 янв",sel:7},
+      {country:"Польша",name:"Kozminski University",program:"Bachelor in Management and Artificial Intelligence",grant:"Merit-стипендии Kozminski (частичная скидка); плата ~25 000 PLN/год",req:"Аттестат, IELTS 6.0/B2, подача до лета 2026",sel:12},
+      {country:"Нидерланды",name:"University of Amsterdam",program:"BSc Business Administration",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0+, математика; дедлайн не-ЕС ~1 февр",sel:15},
+    ],
+    cs:[
+      {country:"Нидерланды",name:"University of Groningen",program:"BSc Artificial Intelligence",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0+, математика; numerus fixus — до 15 янв",sel:17},
+      {country:"Венгрия",name:"Eötvös Loránd University (ELTE)",program:"Computer Science BSc",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, экзамен по математике, англ. B2; SH до 15 янв",sel:13},
+      {country:"Германия",name:"Saarland University",program:"Computer Science (B.Sc.), English track",grant:"Бесплатное обучение (только взнос ~€390/сем) + Deutschlandstipendium €300/мес",req:"Аттестат КЗ + Studienkolleg/1 курс вуза, англ. B2; до 15 июля",sel:14},
+    ],
+    medicine:[
+      {country:"Венгрия",name:"University of Debrecen",program:"General Medicine (MD)",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Экзамен биология/химия, англ. B2; SH до 15 янв",sel:18},
+      {country:"Венгрия",name:"Semmelweis University",program:"Medicine (single-cycle MD)",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Экзамен биология/химия/англ.; SH до 15 янв",sel:21},
+      {country:"Италия",name:"University of Pavia",program:"Medicine and Surgery (English)",grant:"EDiSU Pavia — стипендия + общежитие по доходу, плата снижается почти до 0",req:"Тест IMAT, англ. B2; регистрация на IMAT летом",sel:20},
+    ],
+    engineering:[
+      {country:"Венгрия",name:"Óbuda University",program:"Mechatronical Engineering BSc",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, математика/физика, англ. B2; SH до 15 янв",sel:9},
+      {country:"Нидерланды",name:"Eindhoven University of Technology (TU/e)",program:"Bachelor Automotive Technology",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0+, математика и физика; дедлайн 1 мая",sel:15},
+      {country:"Германия",name:"Hamburg University of Technology (TUHH)",program:"Engineering Science (B.Sc.), спец. Mechatronics",grant:"Бесплатное обучение (гос. вуз) + Deutschlandstipendium €300/мес",req:"Аттестат КЗ + Studienkolleg/1 курс вуза, англ. B2; до 15 июля",sel:13},
+    ],
+    design:[
+      {country:"Венгрия",name:"Budapest Metropolitan University (METU)",program:"Animation BA",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Портфолио, англ. B2; SH до 15 янв",sel:10},
+      {country:"Нидерланды",name:"Breda University of Applied Sciences (BUas)",program:"BSc Creative Media and Game Technologies",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0, отбор (портфолио/задания); до 1 мая",sel:14},
+      {country:"Финляндия",name:"Aalto University",program:"Digital Systems and Design, BSc (Science and Technology)",grant:"Aalto Excellence Scholarship — до 100% платы за обучение",req:"Аттестат, англ. (IELTS/SAT опц.); подача в янв 2027",sel:15},
+    ],
+    education:[
+      {country:"Венгрия",name:"University of Debrecen",program:"Psychology BA",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, англ. B2, собеседование; SH до 15 янв",sel:12},
+      {country:"Нидерланды",name:"University of Twente",program:"BSc Psychology",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0; дедлайн для не-ЕС 1 мая",sel:13},
+      {country:"Венгрия",name:"Eötvös Loránd University (ELTE)",program:"Psychology BA",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, англ. B2, вступит. собеседование; SH до 15 янв",sel:14},
+    ],
+    science:[
+      {country:"Венгрия",name:"Eötvös Loránd University (ELTE)",program:"Mathematics BSc",grant:"Stipendium Hungaricum — полный: обучение + стипендия + общежитие",req:"Аттестат, экзамен по математике, англ. B2; SH до 15 янв",sel:14},
+      {country:"Италия",name:"University of Bologna",program:"Genomics (BSc, English)",grant:"ER.GO (DSU) — стипендия + общежитие по доходу, освобождение от платы",req:"Тест TOLC-I EN, англ. B2; 60 мест, подача весной",sel:16},
+      {country:"Нидерланды",name:"University of Amsterdam",program:"BSc Computational Social Science",grant:"Holland Scholarship — €5 000 (разово, 1-й год, для не-ЕС)",req:"IELTS 6.0+, математика; дедлайн не-ЕС ~1 февр",sel:15},
+    ],
+  },
+  "Азия": {
+    business:[
+      {country:"Гонконг",name:"HKU (Университет Гонконга)",program:"Bachelor of Business Administration (Business Analytics)",grant:"Belt and Road Scholarship (для граждан РК) — полное обучение; + стипендии HKU",req:"IELTS 6.5, SAT ~1350+/A-level; дедлайн ~ноябрь-январь",sel:20},
+      {country:"Южная Корея",name:"Sungkyunkwan University (SKKU)",program:"Bachelor in Global Business Administration (GBA)",grant:"GKS — полный: обучение + ~₩900 тыс./мес + перелёт + год корейского",req:"GPA 80%+, IELTS не обязателен; GKS ~сентябрь-октябрь",sel:15},
+      {country:"Малайзия",name:"Sunway University",program:"Bachelor of Business Analytics (Honours)",grant:"Jeffrey Cheah Entrance Scholarship + Sunway International Scholarship — частично",req:"IELTS 5.5-6.0, аттестат; наборы январь/апрель/август",sel:8},
+    ],
+    marketing:[
+      {country:"Гонконг",name:"HKU (Университет Гонконга)",program:"Bachelor of Science in Marketing Analytics and Technology",grant:"Belt and Road Scholarship — полное обучение; + entrance scholarships HKU",req:"IELTS 6.5, SAT ~1350+; дедлайн ~ноябрь-январь",sel:20},
+      {country:"Южная Корея",name:"SolBridge (Woosong University)",program:"Bachelor of Business Administration (BBA)",grant:"SolBridge Admission Scholarship — 30-70% обучения, лучшим до 100%",req:"IELTS ~5.5+, эссе и интервью; наборы март и сентябрь",sel:7},
+      {country:"Малайзия",name:"Asia Pacific University (APU)",program:"BA (Hons) in Marketing Management with a specialism in Digital Marketing",grant:"APU International Scholarships & Merit Awards — до 30% обучения",req:"IELTS 5.5, аттестат; приём несколько раз в год",sel:7},
+    ],
+    cs:[
+      {country:"Южная Корея",name:"KAIST",program:"BS in Computer Science (School of Computing)",grant:"KAIST International Student Scholarship — обучение + ₩350 тыс./мес + страховка",req:"IELTS 6.5+, рекомендации; early ~23 окт, regular ~6 янв",sel:21},
+      {country:"Сингапур",name:"NTU",program:"Bachelor of Computing (Hons) in Data Science and Artificial Intelligence",grant:"Nanyang Scholarship / Turing AI Scholars — обучение + стипендия + ноутбук",req:"IELTS 6.5+, SAT ~1400+; дедлайн ~середина января",sel:22},
+      {country:"Гонконг",name:"CUHK",program:"BEng in Artificial Intelligence: Systems and Technologies",grant:"Belt and Road Scholarship + Admission Scholarships CUHK — до полного",req:"IELTS 6.0, SAT ~1330+; дедлайн ~начало января",sel:18},
+    ],
+    medicine:[
+      {country:"Гонконг",name:"HKU (Университет Гонконга)",program:"Bachelor of Biomedical Sciences",grant:"Belt and Road Scholarship — полное обучение; + стипендии HKUMed",req:"IELTS 6.5, SAT + интервью; дедлайн ~ноябрь-январь",sel:21},
+      {country:"Южная Корея",name:"Yonsei University (UIC)",program:"Bio-Convergence, BS (Underwood International College)",grant:"GKS — полный: обучение + стипендия + перелёт (Yonsei — вуз-партнёр)",req:"Высокий GPA, эссе; раунды UIC ~сентябрь-январь",sel:18},
+      {country:"Малайзия",name:"Monash University Malaysia",program:"Bachelor of Medical Bioscience",grant:"Monash Malaysia Merit Scholarship — частичное покрытие обучения",req:"IELTS 6.5, сильный аттестат; наборы февраль/июль/октябрь",sel:10},
+    ],
+    engineering:[
+      {country:"Южная Корея",name:"KAIST",program:"BS in Mechanical Engineering",grant:"KAIST International Student Scholarship — обучение + ₩350 тыс./мес",req:"IELTS 6.5+, сильные математика/физика; дедлайн ~октябрь",sel:21},
+      {country:"Япония",name:"Nagoya University",program:"G30 Automotive Engineering Program (BEng)",grant:"MEXT — полный: обучение + ~¥117 тыс./мес + перелёт",req:"IELTS 6.0+, SAT/EJU; раунды ноябрь-декабрь и январь",sel:16},
+      {country:"Гонконг",name:"CUHK",program:"BEng in Mechanical and Automation Engineering (поток Robotics)",grant:"Belt and Road Scholarship + Admission Scholarships CUHK — до полного",req:"IELTS 6.0, SAT ~1290+; дедлайн ~январь",sel:17},
+    ],
+    design:[
+      {country:"Гонконг",name:"City University of Hong Kong",program:"Bachelor of Arts in Creative Media",grant:"Belt and Road Scholarship + CityU Entrance Scholarship — до полного обучения",req:"IELTS 6.5, желательно портфолио; дедлайн ~январь",sel:15},
+      {country:"Китай",name:"NYU Shanghai",program:"Interactive Media Arts (BS)",grant:"Need-based грант NYU Shanghai (CSS Profile) — до полного покрытия",req:"Common App, эссе, IELTS ~7.0; дедлайн ~5 января",sel:18},
+      {country:"Малайзия",name:"Asia Pacific University (APU)",program:"BSc (Hons) in Computer Games Development",grant:"APU International Scholarships & Merit Awards — до 30% обучения",req:"IELTS 5.5, математика в аттестате; приём круглый год",sel:7},
+    ],
+    education:[
+      {country:"Гонконг",name:"Education University of Hong Kong (EdUHK)",program:"Bachelor of Education (Honours) (English Language) – Primary",grant:"Belt and Road Scholarship + entrance scholarships EdUHK; общежитие 2 года",req:"IELTS 6.0, интервью; заявки ~октябрь-январь",sel:10},
+      {country:"Малайзия",name:"Taylor's University",program:"Bachelor of Education (Honours)",grant:"Стипендии Taylor's за успеваемость — частичное покрытие обучения",req:"IELTS 5.5-6.0, аттестат; наборы январь/март/август",sel:7},
+      {country:"Япония",name:"Waseda University",program:"BA in International Liberal Studies (SILS)",grant:"Стипендии Waseda для иностранцев + MEXT Honors — частичное покрытие",req:"Эссе, IELTS ~6.5; AO-набор, дедлайн ~сентябрь-октябрь",sel:15},
+    ],
+    science:[
+      {country:"Южная Корея",name:"KAIST",program:"BS in Physics",grant:"KAIST International Student Scholarship — обучение + ₩350 тыс./мес",req:"IELTS 6.5+, олимпиады — плюс; дедлайн ~октябрь (early)",sel:21},
+      {country:"Япония",name:"Institute of Science Tokyo (Tokyo Tech)",program:"Global Scientists and Engineers Program (GSEP), BEng Transdisciplinary Science and Engineering",grant:"MEXT по рекомендации вуза (8 мест) — обучение + ¥120 тыс./мес",req:"IELTS/TOEFL, тесты по матем./физике; дедлайн ~декабрь-январь",sel:18},
+      {country:"Сингапур",name:"NUS",program:"Bachelor of Science (Honours) in Data Science and Analytics",grant:"Science & Technology Undergraduate Scholarship — обучение + пособие, бонд 6 лет",req:"IELTS 6.5+, SAT ~1400+; дедлайн ~февраль-март",sel:23},
+    ],
+  },
+  "Казахстан": {
+    business:[
+      {country:"Казахстан",name:"Nazarbayev University",program:"Bachelor of Business Administration (BBA), NU GSB",grant:"полный грант NU (NUFYP/прямое поступление)",req:"NUET от 120 / SAT, IELTS 6.5+; подача до весны",sel:19},
+      {country:"Казахстан",name:"KIMEP University",program:"BSc in Business Administration",grant:"гос. грант по ЕНТ / стипендии и скидки KIMEP до 100%",req:"ЕНТ или внутр. тест KEPT, IELTS 5.5+ (или тест англ.)",sel:15},
+      {country:"Казахстан",name:"AITU (Astana IT University)",program:"IT Management",grant:"гос. грант по ЕНТ / платно, гранты акимата",req:"ЕНТ, профиль математика; на грант ~90+",sel:13},
+    ],
+    marketing:[
+      {country:"Казахстан",name:"KIMEP University",program:"BSc in Marketing",grant:"гос. грант по ЕНТ / скидки и стипендии KIMEP",req:"ЕНТ или KEPT, IELTS 5.5+; обучение на английском",sel:15},
+      {country:"Казахстан",name:"AlmaU (Алматы Менеджмент Университет)",program:"Маркетинг (трек Digital Marketing)",grant:"гос. грант по ЕНТ / скидки AlmaU",req:"ЕНТ от 50 (платно), ~85+ на грант",sel:11},
+      {country:"Казахстан",name:"Narxoz University",program:"Маркетинг",grant:"гос. грант по ЕНТ / скидки по баллам ЕНТ",req:"ЕНТ от 50; скидки при высоких баллах",sel:10},
+    ],
+    cs:[
+      {country:"Казахстан",name:"Nazarbayev University",program:"BSc in Computer Science",grant:"полный грант NU (NUFYP/прямое поступление)",req:"NUET 120+ / SAT, IELTS 6.5+; математика",sel:20},
+      {country:"Казахстан",name:"AITU (Astana IT University)",program:"Artificial Intelligence (6B061)",grant:"гос. грант по ЕНТ / платно",req:"ЕНТ: математика+информатика, на грант ~90+",sel:14},
+      {country:"Казахстан",name:"KBTU",program:"Information Systems (Информационные системы)",grant:"гос. грант по ЕНТ / скидки KBTU",req:"ЕНТ 65+, профиль математика+информатика/физика",sel:14},
+    ],
+    medicine:[
+      {country:"Казахстан",name:"Nazarbayev University",program:"Bachelor of Medical Sciences (NUSOM)",grant:"полный грант NU (NUFYP/прямое поступление)",req:"NUET 120+ (мин. 50/50), IELTS 6.0+",sel:20},
+      {country:"Казахстан",name:"КазНМУ им. Асфендиярова",program:"Общая медицина (General Medicine)",grant:"гос. грант по ЕНТ (мед. направления)",req:"ЕНТ 70+ на грант; биология+химия",sel:13},
+      {country:"Казахстан",name:"Медицинский университет Караганды",program:"Общая медицина (General Medicine)",grant:"гос. грант по ЕНТ",req:"ЕНТ от 70; биология+химия",sel:11},
+    ],
+    engineering:[
+      {country:"Казахстан",name:"Nazarbayev University",program:"BEng in Robotics and Mechatronics",grant:"полный грант NU (NUFYP/прямое поступление)",req:"NUET 120+ / SAT, IELTS 6.5+; математика/физика",sel:19},
+      {country:"Казахстан",name:"Satbayev University",program:"Нефтегазовое дело (Petroleum Engineering)",grant:"гос. грант по ЕНТ (много технических грантов)",req:"ЕНТ ~65+ на грант; математика+физика",sel:12},
+      {country:"Казахстан",name:"KBTU",program:"Автоматизация и управление (Automation and Control)",grant:"гос. грант по ЕНТ / скидки KBTU",req:"ЕНТ 65+; математика+физика",sel:14},
+    ],
+    design:[
+      {country:"Казахстан",name:"AITU (Astana IT University)",program:"Media Technologies (6B06105)",grant:"гос. грант по ЕНТ / платно",req:"ЕНТ + внутренний тест AET, на грант ~85+",sel:13},
+      {country:"Казахстан",name:"МУИТ (IITU)",program:"Digital Journalism (6B03202)",grant:"гос. грант по ЕНТ / платно (~973 тыс. тг/год)",req:"ЕНТ + творческий экзамен (журналистика)",sel:12},
+      {country:"Казахстан",name:"KazGASA (МОК)",program:"Graphic Design (6B02122)",grant:"гос. грант по ЕНТ (группа B031) / платно",req:"2 творческих экзамена: рисунок + черчение",sel:10},
+    ],
+    education:[
+      {country:"Казахстан",name:"SDU University",program:"Two Foreign Languages (6B01702)",grant:"пед. гос. грант по ЕНТ / скидки SDU до 100%",req:"ЕНТ ~75+ на пед. грант; профиль иностр. язык",sel:12},
+      {country:"Казахстан",name:"КазНПУ им. Абая",program:"Педагогика и психология (6B01101)",grant:"пед. гос. грант по ЕНТ",req:"ЕНТ ~70+ на грант",sel:8},
+      {country:"Казахстан",name:"КазНУ им. аль-Фараби",program:"Психология (6B03107)",grant:"гос. грант по ЕНТ",req:"ЕНТ ~80+ на грант (биология+география)",sel:10},
+    ],
+    science:[
+      {country:"Казахстан",name:"Nazarbayev University",program:"BSc in Biological Sciences",grant:"полный грант NU (NUFYP/прямое поступление)",req:"NUET 120+ / SAT, IELTS 6.5+",sel:19},
+      {country:"Казахстан",name:"КазНУ им. аль-Фараби",program:"Химия (6B05301)",grant:"гос. грант по ЕНТ",req:"ЕНТ ~75+ на грант; профиль химия",sel:11},
+      {country:"Казахстан",name:"ЕНУ им. Гумилёва",program:"Физика",grant:"гос. грант по ЕНТ",req:"ЕНТ ~70+ на грант; физика+математика",sel:9},
+    ],
+  },
 };
-FALLBACK_UNIS["любая страна с грантом"] = [FALLBACK_UNIS["Азия"][0], FALLBACK_UNIS["Европа"][0], FALLBACK_UNIS["США"][0]];
+/* «любая страна с грантом» — по каждой специальности лучший вариант с полным
+   покрытием из Азии, Европы и США (иначе первый в списке региона) */
+FALLBACK_UNIS["любая страна с грантом"] = Object.fromEntries(Object.keys(SPECS).map(k => {
+  const pick = (geo) => FALLBACK_UNIS[geo][k].find(u => /полн|100%/i.test(u.grant)) || FALLBACK_UNIS[geo][k][0];
+  return [k, [pick("Азия"), pick("Европа"), pick("США")]];
+}));

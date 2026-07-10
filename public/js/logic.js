@@ -60,9 +60,11 @@ function buildFallbackResult(){
   const readiness=readinessOf(S.stats);
   const geo=S.meta.geo||"любая страна с грантом";
   const boost=examBoost();
-  const universities=(FALLBACK_UNIS[geo]||FALLBACK_UNIS["любая страна с грантом"]).map(u=>({
-    ...u, program:specialties[0].name,
-    prob:clamp(30+readiness+boost-(u.name.includes("NYU")||u.name.includes("NUS")?25:8),10,92),
+  const geoBase=FALLBACK_UNIS[geo]||FALLBACK_UNIS["любая страна с грантом"];
+  const cell=geoBase[specialties[0].key]||geoBase.cs;
+  const universities=cell.map(u=>({
+    country:u.country, name:u.name, program:u.program, grant:u.grant, req:u.req,
+    prob:clamp(30+readiness+boost-(u.sel??12),10,92),
   }));
   const gaps=[
     {label:"IELTS", ok:!!S.meta.ielts, note:S.meta.ielts?("сдан"+(S.meta.ieltsScore?" · "+S.meta.ieltsScore:"")):"не сдан"},
