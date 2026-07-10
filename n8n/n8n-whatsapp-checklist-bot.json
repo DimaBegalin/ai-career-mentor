@@ -1,0 +1,143 @@
+{
+  "name": "WhatsApp Checklist Bot — AI Career Mentor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "career-lead",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh-lead",
+      "name": "Webhook · Лид с сайта",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "career-lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Сохраняем лид в память воркфлоу (staticData), чтобы отдать чек-лист,\n// когда ученик нажмёт кнопку в WhatsApp.\n// ⚠️ staticData работает только в АКТИВНОМ (production) воркфлоу.\nconst sd = $getWorkflowStaticData('global');\nsd.leads = sd.leads || {};\n\nconst b = $json.body || $json;\nconst wa = String(b.waPhone || '').replace(/\\D/g, '');\nif (!wa || wa.length < 11) {\n  throw new Error('waPhone пустой или некорректный: ' + JSON.stringify(b.waPhone));\n}\n\nsd.leads[wa] = {\n  name: b.name || 'друг',\n  checklist: b.checklist || 'Чек-лист готовится — менеджер свяжется с тобой в ближайшее время.',\n  uniShort: b.uniShort || '',\n  phone: b.phone || wa,\n  specialties: b.specialties || [],\n  topUniversities: b.topUniversities || [],\n  exams: b.exams || '',\n  ts: b.ts || new Date().toISOString(),\n  delivered: false\n};\n\nreturn [{ json: { wa, name: sd.leads[wa].name, uniShort: sd.leads[wa].uniShort || 'твои топ-вузы' } }];"
+      },
+      "id": "code-save",
+      "name": "Сохранить лид",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v21.0/PASTE_PHONE_NUMBER_ID/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer PASTE_WABA_TOKEN" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  messaging_product: 'whatsapp',\n  to: $json.wa,\n  type: 'template',\n  template: {\n    name: 'career_checklist_ready',\n    language: { code: 'ru' },\n    components: [\n      {\n        type: 'body',\n        parameters: [\n          { type: 'text', text: $json.name },\n          { type: 'text', text: $json.uniShort }\n        ]\n      }\n    ]\n  }\n}) }}",
+        "options": {}
+      },
+      "id": "http-template",
+      "name": "WA · Отправить шаблон с кнопкой",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "wa-inbound",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-verify",
+      "name": "Webhook · Верификация Meta (GET)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 220],
+      "webhookId": "wa-inbound-get"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.verify_token'] === 'career-mentor-verify' ? $json.query['hub.challenge'] : 'verify token mismatch' }}",
+        "options": {}
+      },
+      "id": "respond-verify",
+      "name": "Ответить hub.challenge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [240, 220]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wa-inbound",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh-inbound",
+      "name": "Webhook · Входящие из WhatsApp (POST)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 440],
+      "webhookId": "wa-inbound-post"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Разбираем входящее событие Meta. Реагируем только на сообщения\n// (статусы доставки/прочтения пропускаем — return []).\nconst sd = $getWorkflowStaticData('global');\nsd.leads = sd.leads || {};\n\nconst body = $json.body || $json;\nconst value = body?.entry?.[0]?.changes?.[0]?.value;\nconst msg = value?.messages?.[0];\nif (!msg) return [];\n\nconst wa = String(msg.from || '').replace(/\\D/g, '');\nconst lead = sd.leads[wa];\n\n// Кнопка «Получить чек-лист» или любое сообщение → шлём чек-лист.\n// Если лида нет (написал незнакомый номер) — вежливый ответ-приглашение.\nconst text = lead\n  ? lead.checklist\n  : 'Привет! Чтобы получить персональный чек-лист поступления, пройди тест AI Career Mentor на нашем сайте 🎓';\n\nif (lead) lead.delivered = true;\n\nreturn [{ json: { wa, text } }];"
+      },
+      "id": "code-parse",
+      "name": "Разобрать входящее + найти чек-лист",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 440]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v21.0/PASTE_PHONE_NUMBER_ID/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer PASTE_WABA_TOKEN" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  messaging_product: 'whatsapp',\n  to: $json.wa,\n  type: 'text',\n  text: { body: $json.text }\n}) }}",
+        "options": {}
+      },
+      "id": "http-checklist",
+      "name": "WA · Отправить чек-лист",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 440]
+    }
+  ],
+  "connections": {
+    "Webhook · Лид с сайта": {
+      "main": [[{ "node": "Сохранить лид", "type": "main", "index": 0 }]]
+    },
+    "Сохранить лид": {
+      "main": [[{ "node": "WA · Отправить шаблон с кнопкой", "type": "main", "index": 0 }]]
+    },
+    "Webhook · Верификация Meta (GET)": {
+      "main": [[{ "node": "Ответить hub.challenge", "type": "main", "index": 0 }]]
+    },
+    "Webhook · Входящие из WhatsApp (POST)": {
+      "main": [[{ "node": "Разобрать входящее + найти чек-лист", "type": "main", "index": 0 }]]
+    },
+    "Разобрать входящее + найти чек-лист": {
+      "main": [[{ "node": "WA · Отправить чек-лист", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "pinData": {}
+}

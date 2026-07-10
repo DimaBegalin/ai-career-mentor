@@ -1,0 +1,11 @@
+{
+  "name": "ai-career-mentor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Квест-профориентация с ИИ-подбором вузов и WhatsApp-доставкой чек-листа",
+  "scripts": {
+    "start": "node server.js",
+    "logs": "tail -f logs/app.log"
+  },
+  "engines": { "node": ">=18" }
+}
